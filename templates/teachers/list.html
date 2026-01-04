@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Teachers - School Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Teachers</h2>
+        {% if current_user.is_admin() %}
+        <a href="{{ url_for('teachers.create_teacher') }}" class="btn">Add New Teacher</a>
+        {% endif %}
+    </div>
+    
+    <form method="GET" action="{{ url_for('teachers.list_teachers') }}" class="search-bar">
+        <input type="text" name="search" placeholder="Search by name, ID, subject, or email..." value="{{ search }}">
+        <button type="submit" class="btn">Search</button>
+        {% if search %}
+        <a href="{{ url_for('teachers.list_teachers') }}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </form>
+    
+    {% if teachers.items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Teacher ID</th>
+                <th>Full Name</th>
+                <th>Subject</th>
+                <th>Qualification</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joining Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers.items %}
+            <tr>
+                <td>{{ teacher.teacher_id }}</td>
+                <td>{{ teacher.full_name }}</td>
+                <td>{{ teacher.subject }}</td>
+                <td>{{ teacher.qualification or 'N/A' }}</td>
+                <td>{{ teacher.email or 'N/A' }}</td>
+                <td>{{ teacher.phone or 'N/A' }}</td>
+                <td>{{ teacher.joining_date.strftime('%Y-%m-%d') }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('teachers.view_teacher', teacher_id=teacher.id) }}" class="btn btn-secondary">View</a>
+                    {% if current_user.is_admin() %}
+                    <a href="{{ url_for('teachers.edit_teacher', teacher_id=teacher.id) }}" class="btn">Edit</a>
+                    <form method="POST" action="{{ url_for('teachers.delete_teacher', teacher_id=teacher.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this teacher?');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if teachers.pages > 1 %}
+    <div class="pagination">
+        {% if teachers.has_prev %}
+        <a href="{{ url_for('teachers.list_teachers', page=teachers.prev_num, search=search) }}">Previous</a>
+        {% endif %}
+        
+        {% for page_num in teachers.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+                {% if page_num == teachers.page %}
+                <span class="active">{{ page_num }}</span>
+                {% else %}
+                <a href="{{ url_for('teachers.list_teachers', page=page_num, search=search) }}">{{ page_num }}</a>
+                {% endif %}
+            {% else %}
+                <span>...</span>
+            {% endif %}
+        {% endfor %}
+        
+        {% if teachers.has_next %}
+        <a href="{{ url_for('teachers.list_teachers', page=teachers.next_num, search=search) }}">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <p>No teachers found. {% if current_user.is_admin() %}<a href="{{ url_for('teachers.create_teacher') }}">Add your first teacher</a>{% endif %}</p>
+    {% endif %}
+</div>
+{% endblock %}
+

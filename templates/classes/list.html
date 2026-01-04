@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Classes - School Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Classes</h2>
+        {% if current_user.is_admin() %}
+        <div>
+            <a href="{{ url_for('classes.assign_subject') }}" class="btn btn-success">Assign Subject</a>
+            <a href="{{ url_for('classes.create_class') }}" class="btn">Add New Class</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if class_data %}
+    <table>
+        <thead>
+            <tr>
+                <th>Class</th>
+                <th>Students</th>
+                <th>Subject Assignments</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in class_data %}
+            <tr>
+                <td><strong>{{ data['class'].get_display_name() }}</strong></td>
+                <td>{{ data['student_count'] }} students</td>
+                <td>{{ data['assignment_count'] }} assignments</td>
+                <td class="actions">
+                    <a href="{{ url_for('classes.view_class', class_id=data['class'].id) }}" class="btn btn-secondary">View Details</a>
+                    {% if current_user.is_admin() %}
+                    <form method="POST" action="{{ url_for('classes.delete_class', class_id=data['class'].id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this class? This will also remove all student assignments and subject assignments.');">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No classes found. {% if current_user.is_admin() %}<a href="{{ url_for('classes.create_class') }}">Create your first class</a>{% endif %}</p>
+    {% endif %}
+</div>
+{% endblock %}
+

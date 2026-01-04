@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}View Teacher - School Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Teacher Details</h2>
+        <div>
+            {% if current_user.is_admin() %}
+            <a href="{{ url_for('teachers.edit_teacher', teacher_id=teacher.id) }}" class="btn">Edit</a>
+            {% endif %}
+            <a href="{{ url_for('teachers.list_teachers') }}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div>
+            <h3 style="margin-bottom: 1rem; color: #667eea;">Personal Information</h3>
+            <p><strong>Teacher ID:</strong> {{ teacher.teacher_id }}</p>
+            <p><strong>Full Name:</strong> {{ teacher.full_name }}</p>
+            <p><strong>Subject:</strong> {{ teacher.subject }}</p>
+            <p><strong>Qualification:</strong> {{ teacher.qualification or 'N/A' }}</p>
+            <p><strong>Email:</strong> {{ teacher.email or 'N/A' }}</p>
+            <p><strong>Phone:</strong> {{ teacher.phone or 'N/A' }}</p>
+            <p><strong>Joining Date:</strong> {{ teacher.joining_date.strftime('%Y-%m-%d') }}</p>
+        </div>
+        
+        <div>
+            <h3 style="margin-bottom: 1rem; color: #667eea;">Additional Information</h3>
+            <p><strong>Created At:</strong> {{ teacher.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Last Updated:</strong> {{ teacher.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

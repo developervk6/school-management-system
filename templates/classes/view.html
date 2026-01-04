@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}View Class - School Management System{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Class: {{ class_obj.get_display_name() }}</h2>
+        <a href="{{ url_for('classes.list_classes') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+    
+    <div style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; color: #667eea;">Students ({{ students|length }})</h3>
+        {% if students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.email or 'N/A' }}</td>
+                    <td>{{ student.phone or 'N/A' }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('students.view_student', student_id=student.id) }}" class="btn btn-secondary">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No students assigned to this class.</p>
+        {% endif %}
+    </div>
+    
+    <div>
+        <h3 style="margin-bottom: 1rem; color: #667eea;">Subject Assignments ({{ assignments|length }})</h3>
+        {% if assignments %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Teacher ID</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assignment in assignments %}
+                <tr>
+                    <td>{{ assignment.subject_name }}</td>
+                    <td>{{ assignment.teacher.full_name }}</td>
+                    <td>{{ assignment.teacher.teacher_id }}</td>
+                    <td class="actions">
+                        <a href="{{ url_for('teachers.view_teacher', teacher_id=assignment.teacher.id) }}" class="btn btn-secondary">View Teacher</a>
+                        {% if current_user.is_admin() %}
+                        <form method="POST" action="{{ url_for('classes.delete_assignment', assignment_id=assignment.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to remove this assignment?');">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No subject assignments for this class. {% if current_user.is_admin() %}<a href="{{ url_for('classes.assign_subject') }}">Assign a subject</a>{% endif %}</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

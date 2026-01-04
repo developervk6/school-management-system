@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - School Management System{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 2rem;">Dashboard</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>{{ total_students }}</h3>
+        <p>Total Students</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_teachers }}</h3>
+        <p>Total Teachers</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_classes }}</h3>
+        <p>Total Classes</p>
+    </div>
+    <div class="stat-card">
+        <h3>{{ total_assignments }}</h3>
+        <p>Subject Assignments</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Recent Students</h2>
+        <a href="{{ url_for('students.create_student') }}" class="btn">Add Student</a>
+    </div>
+    
+    {% if recent_students %}
+    <table>
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Class</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in recent_students %}
+            <tr>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.full_name }}</td>
+                <td>{{ student.email or 'N/A' }}</td>
+                <td>{{ student.class_obj.get_display_name() if student.class_obj else 'N/A' }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('students.view_student', student_id=student.id) }}" class="btn btn-secondary">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No students found. <a href="{{ url_for('students.create_student') }}">Add your first student</a></p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Recent Teachers</h2>
+        <a href="{{ url_for('teachers.create_teacher') }}" class="btn">Add Teacher</a>
+    </div>
+    
+    {% if recent_teachers %}
+    <table>
+        <thead>
+            <tr>
+                <th>Teacher ID</th>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in recent_teachers %}
+            <tr>
+                <td>{{ teacher.teacher_id }}</td>
+                <td>{{ teacher.full_name }}</td>
+                <td>{{ teacher.subject }}</td>
+                <td>{{ teacher.email or 'N/A' }}</td>
+                <td class="actions">
+                    <a href="{{ url_for('teachers.view_teacher', teacher_id=teacher.id) }}" class="btn btn-secondary">View</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No teachers found. <a href="{{ url_for('teachers.create_teacher') }}">Add your first teacher</a></p>
+    {% endif %}
+</div>
+{% endblock %}
+
